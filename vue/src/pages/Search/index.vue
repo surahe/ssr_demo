@@ -1,0 +1,22 @@
+<template>
+  <div class="search">
+    <p>当前页:搜素页</p>
+    <a @click="jumpList()">去列表页</a>
+  </div>
+</template>
+
+<script>
+export default {
+  metaInfo: {
+    title: '搜索页',
+  },
+  methods: {
+    jumpList() {
+      console.log(this.$router)
+      this.$router.push({
+        path: 'list',
+      });
+    },
+  },
+};
+</script>
