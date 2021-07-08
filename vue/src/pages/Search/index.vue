@@ -12,7 +12,6 @@ export default {
   },
   methods: {
     jumpList() {
-      console.log(this.$router)
       this.$router.push({
         path: 'list',
       });

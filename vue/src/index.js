@@ -1,13 +1,15 @@
 import Koa2 from 'koa';
+import staticFiles from 'koa-static';
 import { createRenderer } from 'vue-server-renderer';
 import Vue from 'vue';
 
-// Vue部分
 import App from './App.vue';
 import { createRouter, routerReady } from './route.js';
 
 const renderer = createRenderer();
 const app = new Koa2();
+
+app.use(staticFiles('public'));
 
 /**
  * 应用接管路由
@@ -15,7 +17,7 @@ const app = new Koa2();
 app.use(async function (ctx) {
   const req = ctx.request;
 
-  const router = createRouter(); //创建路由
+  const router = createRouter();
 
   const vm = new Vue({
     router,
@@ -27,7 +29,6 @@ app.use(async function (ctx) {
   // 等到 router 钩子函数解析完
   await routerReady(router);
 
-  //获取匹配的页面组件
   const matchedComponents = router.getMatchedComponents();
 
   if (!matchedComponents.length) {
@@ -37,7 +38,14 @@ app.use(async function (ctx) {
 
   ctx.set('Content-Type', 'text/html;charset=utf-8');
 
-  const htmlString = await renderer.renderToString(vm);
+  let htmlString
+
+  try {
+    htmlString = await renderer.renderToString(vm);
+  } catch (error) {
+    ctx.status = 500;
+    ctx.body = 'Internal Server Error';
+  }
 
   ctx.body = `<html>
   <head>
@@ -45,6 +53,7 @@ app.use(async function (ctx) {
     <body>
       ${htmlString}
     </body>
+    <script src="./index.js"></script>
   </html>`;
 });
 

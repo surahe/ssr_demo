@@ -1,7 +1,7 @@
 <template>
   <div class="list">
     <p>当前页:列表页</p>
-    <p>姓名:</p>
+    <a @click="jumpSearch()">go搜索页</a>
     <ul>
       <li >
         <p>城市:</p>
@@ -14,6 +14,13 @@
 
 <script>
 export default {
+  methods: {
+    jumpSearch() {
+      this.$router.push({
+        path: "search",
+      });
+    },
+  },
   metaInfo: {
     title: "列表页",
     meta: [
