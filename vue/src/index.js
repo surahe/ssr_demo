@@ -6,6 +6,8 @@ import Vue from 'vue';
 import App from './App.vue';
 import { createRouter, routerReady } from './route.js';
 
+import { createStore } from './vuex/store';
+
 const renderer = createRenderer();
 const app = new Koa2();
 
@@ -18,9 +20,11 @@ app.use(async function (ctx) {
   const req = ctx.request;
 
   const router = createRouter();
+  const store = createStore();
 
   const vm = new Vue({
     router,
+    store,
     render: (h) => h(App),
   });
 
@@ -41,6 +45,16 @@ app.use(async function (ctx) {
   let htmlString
 
   try {
+    await Promise.all(
+      matchedComponents.map((Component) => {
+        if (Component.asyncData) {
+          Component.asyncData({
+            store,
+            route: router.currentRoute,
+          });
+        }
+      })
+    );
     htmlString = await renderer.renderToString(vm);
   } catch (error) {
     ctx.status = 500;
@@ -53,6 +67,11 @@ app.use(async function (ctx) {
     <body>
       ${htmlString}
     </body>
+    <script>
+      var context = {
+        state: ${JSON.stringify(store.state)}
+      }
+    </script>
     <script src="./index.js"></script>
   </html>`;
 });

@@ -3,10 +3,8 @@
     <p>当前页:列表页</p>
     <a @click="jumpSearch()">go搜索页</a>
     <ul>
-      <li >
-        <p>城市:</p>
-        <p>经度: </p>
-        <p>维度:</p>
+      <li v-for="item in list" :key="item.name">
+        <p>城市: {{ item.name }}</p>
       </li>
     </ul>
   </div>
@@ -14,6 +12,14 @@
 
 <script>
 export default {
+  asyncData({ store, route }) {
+    return store.dispatch("getList");
+  },
+  computed: {
+    list() {
+      return this.$store.state.list;
+    },
+  },
   methods: {
     jumpSearch() {
       this.$router.push({
