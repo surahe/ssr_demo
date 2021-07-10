@@ -7,11 +7,15 @@ import App from './App.vue';
 import { createRouter, routerReady } from './route.js';
 
 import { createStore } from './vuex/store';
+import { getServerAxios } from "./util/getAxios";
+import { proxyHanlder } from "./middleware/proxy";
 
 const renderer = createRenderer();
 const app = new Koa2();
 
 app.use(staticFiles('public'));
+
+proxyHanlder(app);
 
 /**
  * 应用接管路由
@@ -20,7 +24,7 @@ app.use(async function (ctx) {
   const req = ctx.request;
 
   const router = createRouter();
-  const store = createStore();
+  const store = createStore(getServerAxios(ctx));
 
   const vm = new Vue({
     router,
@@ -48,7 +52,7 @@ app.use(async function (ctx) {
     await Promise.all(
       matchedComponents.map((Component) => {
         if (Component.asyncData) {
-          Component.asyncData({
+          return Component.asyncData({
             store,
             route: router.currentRoute,
           });
@@ -66,13 +70,13 @@ app.use(async function (ctx) {
   </head>
     <body>
       ${htmlString}
+      <script>
+        var context = {
+          state: ${JSON.stringify(store.state)}
+        }
+      </script>
+      <script src="./index.js"></script>
     </body>
-    <script>
-      var context = {
-        state: ${JSON.stringify(store.state)}
-      }
-    </script>
-    <script src="./index.js"></script>
   </html>`;
 });
 
