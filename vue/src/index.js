@@ -23,6 +23,12 @@ proxyHanlder(app);
 app.use(async function (ctx) {
   const req = ctx.request;
 
+  //图标直接返回
+  if (req.path === '/favicon.ico') {
+    ctx.body = '';
+    return false;
+  }
+
   const router = createRouter();
   const store = createStore(getServerAxios(ctx));
 
@@ -48,6 +54,8 @@ app.use(async function (ctx) {
 
   let htmlString
 
+  const context = { title: 'hello' }; //创建一个上下文对象
+
   try {
     await Promise.all(
       matchedComponents.map((Component) => {
@@ -59,7 +67,7 @@ app.use(async function (ctx) {
         }
       })
     );
-    htmlString = await renderer.renderToString(vm);
+    htmlString = await renderer.renderToString(vm, context);
   } catch (error) {
     ctx.status = 500;
     ctx.body = 'Internal Server Error';
@@ -67,6 +75,7 @@ app.use(async function (ctx) {
 
   ctx.body = `<html>
   <head>
+  ${context.styles ? context.styles : ''}
   </head>
     <body>
       ${htmlString}

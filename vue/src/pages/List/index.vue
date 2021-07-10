@@ -47,3 +47,12 @@ export default {
   },
 };
 </script>
+
+<style scoped lang="scss">
+  .list {
+    background: red;
+    a {
+      color: blue;
+    }
+  }
+</style>
