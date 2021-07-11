@@ -6,9 +6,12 @@ import Vue from 'vue';
 import App from './App.vue';
 import { createRouter, routerReady } from './route.js';
 
+import VueMeta from 'vue-meta';
 import { createStore } from './vuex/store';
 import { getServerAxios } from "./util/getAxios";
 import { proxyHanlder } from "./middleware/proxy";
+
+Vue.use(VueMeta);
 
 const renderer = createRenderer();
 const app = new Koa2();
@@ -37,6 +40,8 @@ app.use(async function (ctx) {
     store,
     render: (h) => h(App),
   });
+
+  const meta_obj = vm.$meta(); // 生成的头信息
 
   router.push(req.url);
 
@@ -72,9 +77,13 @@ app.use(async function (ctx) {
     ctx.status = 500;
     ctx.body = 'Internal Server Error';
   }
+  const result = meta_obj.inject();
+  const { title, meta } = result;
 
   ctx.body = `<html>
   <head>
+  ${title ? title.text() : ''}
+  ${meta ? meta.text() : ''}
   ${context.styles ? context.styles : ''}
   </head>
     <body>
