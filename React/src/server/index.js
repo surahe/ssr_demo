@@ -7,6 +7,8 @@ import Home from '../containers/Home.js';
 const app = express();
 const content = ReactDOMServer.renderToString(<Home />);
 
+app.use(express.static('public'));
+
 app.get('/', function (req, res) {
   res.send(
     `
@@ -16,6 +18,7 @@ app.get('/', function (req, res) {
       </head>
       <body>
         <div id="root">${content}</div>
+        <script src="./index.js"></script>
       </body>
     </html>
   `
