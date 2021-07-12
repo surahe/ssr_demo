@@ -1,30 +1,14 @@
-// server/index.js
-import React from 'react'
 import express from 'express';
-import ReactDOMServer from 'react-dom/server.js';
-import Home from '../containers/Home.js';
+import { render } from './utils';
 
 const app = express();
-const content = ReactDOMServer.renderToString(<Home />);
-
 app.use(express.static('public'));
 
-app.get('/', function (req, res) {
-  res.send(
-    `
-    <html>
-      <head>
-        <title>ssr</title>
-      </head>
-      <body>
-        <div id="root">${content}</div>
-        <script src="./index.js"></script>
-      </body>
-    </html>
-  `
-  );
-})
+//注意这里要换成*来匹配
+app.get('*', function (req, res) {
+  res.send(render(req));
+});
+
 app.listen(3001, () => {
   console.log('listen:3001')
-})
-
+});
