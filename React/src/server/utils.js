@@ -6,12 +6,16 @@ import { Provider } from 'react-redux';
 import { renderRoutes } from 'react-router-config';
 import Routes from '../Routes'
 import StyleContext from 'isomorphic-style-loader/StyleContext';
+import { Helmet } from 'react-helmet';
 
 export const render = (store, routes, req, context) => {
   const css = new Set();
   const insertCss = (...styles) => styles.forEach(style => {
     css.add(style._getCss())
   })
+
+  //拿到helmet对象，然后在html字符串中引入
+  const helmet = Helmet.renderStatic();
 
   //构建服务端的路由
   const content = renderToString(
@@ -28,7 +32,8 @@ export const render = (store, routes, req, context) => {
   return `
     <html>
       <head>
-        <title>ssr</title>
+        ${helmet.title.toString()}
+        ${helmet.meta.toString()}
         <style>${[...css].join('')}</style>
       </head>
       <body>

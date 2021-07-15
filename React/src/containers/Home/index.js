@@ -3,11 +3,27 @@ import { connect } from 'react-redux';
 import { getHomeList } from './store/actions'
 import styles from './style.css';
 import withStyles from 'isomorphic-style-loader/withStyles';
+import { Helmet } from 'react-helmet';
 
 class Home extends Component {
-  render() {
+  getList() {
     const { list } = this.props
     return list.map(item => <div key={item.id}>{item.title}</div>)
+  }
+  render() {
+    return (
+      <React.Fragment>
+        <Helmet>
+          <title>这是三元的技术博客，分享前端知识</title>
+          <meta name="description" content="这是三元的技术博客，分享前端知识"/>
+        </Helmet>
+        <div className="test">
+          {
+            this.getList()
+          }
+        </div>
+      </React.Fragment>
+    )
   }
   UNSAFE_componentWillMount() {
     // 判断当前的数据是否已经从服务端获取
