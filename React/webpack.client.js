@@ -10,6 +10,17 @@ const clientConfig = {
     filename: 'index.js',
     path: path.resolve(__dirname, 'public')
   },
+  module: {
+    rules: [{
+      test: /\.css$/,
+      use: ['isomorphic-style-loader', 'style-loader', {
+        loader: 'css-loader',
+        options: {
+          esModule: false,
+        }
+      }]
+    }]
+  }
 }
 
 module.exports = merge.merge(config, clientConfig);

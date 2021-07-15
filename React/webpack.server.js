@@ -18,7 +18,7 @@ const serverConfig = {
       use: ['isomorphic-style-loader', {
         loader: 'css-loader',
         options: {
-          modules: true
+          esModule: false,
         }
       }]
     }]
